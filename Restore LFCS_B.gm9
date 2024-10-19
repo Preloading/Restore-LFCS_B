@@ -1,0 +1,88 @@
+# Made by Preloading in like 2 hours.
+# Version 1.2
+
+# Version History
+# 1.2 Fixed random text accedently added.
+# 1.1 A mistaken release, not meant for public release, and had some stupid bugs.
+# + Removed the unknown if it works to the Movable.sed method
+# 1.0 Initial Release
+
+imgumount
+echo "This script is to recovering LocalFriendCodeSeed_B\nAlso solves 002-0150 on Pretendo.\nWritten by Preloading"
+if not find $[GM9OUT]/LocalFriendCodeSeedB_Backup NULL
+    if ask "Do you wish to backup your current LFCS_B?\nThis is strongly recommended!"
+        cp -o 1:/rw/sys/LocalFriendCodeSeed_B $[GM9OUT]/LocalFriendCodeSeedB_Backup
+    end
+end
+
+@MENU
+labelsel -o -s "Restore Options" RESTOREVIA_*
+goto MENU
+
+@RESTOREVIA_Luma3DS_Backups
+if ask "This will restore from sd:/luma/backups.\nContinue?"
+    cp -w -n 0:/luma/backups/LocalFriendCodeSeed_B 1:/rw/sys/LocalFriendCodeSeed_B
+    if ask "Success!\nTo verify, reboot into an online pretendo game.\nReboot now?"
+        reboot
+    else
+        goto MENU
+    end
+else
+    goto MENU
+end
+
+@RESTOREVIA_Essential.exefs
+if ask "This will restore from essential.exefs.\nContinue?"
+    imgmount S:/essential.exefs
+    cp -w -n G:/frndseed 1:/rw/sys/LocalFriendCodeSeed_B
+    imgumount
+    if ask "Success!\nTo verify, reboot into an online pretendo game.\nReboot now?"
+        reboot
+    else
+        goto MENU
+    end
+else
+    goto MENU
+end
+
+@RESTOREVIA_Movable.sed_from_Essential.exefs
+if ask "This will restore from movable.sed in essential.exefs.\nContinue?"
+    imgmount S:/essential.exefs
+    inject G:/movable@8:110 1:/rw/sys/LocalFriendCodeSeed_B@0
+    imgumount
+    if ask "Success!\nTo verify, reboot into an online pretendo game.\nReboot now?"
+        reboot
+    else
+        goto MENU
+    end
+else
+    goto MENU
+end
+
+@RESTOREVIA_Movable.sed
+if ask "This will restore from movable.sed.\nContinue?"
+    inject 1:/private/movable.sed@8:110 1:/rw/sys/LocalFriendCodeSeed_B@0
+    if ask "Success!\nTo verify, reboot into an online pretendo game.\nReboot now?"
+        reboot
+    else
+        goto MENU
+    end
+else
+    goto MENU
+end
+
+@RESTOREVIA_Restore_Original_LFCS
+if ask "This will restore the LFCS found before this script.\nContinue?"
+    cp -w -n $[GM9OUT]/LocalFriendCodeSeedB_Backup 1:/rw/sys/LocalFriendCodeSeed_B
+    if ask "Success!\nYour before script LFCS has been restored.\nReboot now?"
+        reboot
+    else
+        goto MENU
+    end
+else
+    goto MENU
+end
+
+@RESTOREVIA_Exit
+set ERRORMSG "Exiting..."
+chk "A" "B"
